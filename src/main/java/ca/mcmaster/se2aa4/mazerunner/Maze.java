@@ -1,19 +1,18 @@
 package ca.mcmaster.se2aa4.mazerunner;
 
-import java.util.LinkedHashMap;
-import java.io.FileReader;
 import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.tools.picocli.CommandLine;
 
 public class Maze {
     private Position entry;
     private Position exit;
     private static final Logger logger = LogManager.getLogger();
-    private static LinkedHashMap<Position, Integer> mazeGrid = new LinkedHashMap<Position, Integer>(); //keys: 2dVectorPosition values: 0 = wall , 1 = space
+    private final LinkedHashMap<Position, Integer> mazeGrid = new LinkedHashMap<>(); //keys: 2dVectorPosition values: 0 = wall , 1 = space
 
     public Maze(String filePath){ //to create maze need a valid file path
         try {
@@ -42,12 +41,23 @@ public class Maze {
         }  
         logger.info("*Entry: "+entry.getStringPosition()+"  *Exit: "+exit.getStringPosition());
     }
+    
+    public Position getEntry(){
+        return entry;
+    }
 
+    public Position getexit(){
+        return exit;
+    }
+
+    public int getTypeAtPosition(Position position){ //Returns the value of the position key in the grid. Returns: -1=doesntExist , 0=wall , 1=space
+        return mazeGrid.getOrDefault(position,-1); 
+    }
     public void printMaze(){
         int pastX = 0;
-        for(Map.Entry<Position, Integer> entry : mazeGrid.entrySet()) {
-            Position pos = entry.getKey();
-            int type = entry.getValue();
+        for(Map.Entry<Position, Integer> mapEntry : mazeGrid.entrySet()) {
+            Position pos = mapEntry.getKey();
+            int type = mapEntry.getValue();
             if (pastX != pos.getPosition()[0]){
                 pastX = pos.getPosition()[0];
                 System.out.print(System.lineSeparator());
