@@ -19,6 +19,18 @@ public class Main {
 
         logger.info("**** Reading the maze from file " + mazeFileLocation);
         Maze maze = new Maze(mazeFileLocation);
+        int[] entry2D = maze.getEntry().getPosition();
+        Explorer explorer = new Explorer(new Position(entry2D[0],entry2D[1]),maze);
+        //demo test movement
+        explorer.moveInstruction('F');
+        explorer.moveInstruction('F');
+        explorer.moveInstruction('L');
+        explorer.moveInstruction('L');
+        explorer.moveInstruction('R');
+        explorer.moveInstruction('R');
+        explorer.moveInstruction('R');
+
+
         maze.printMaze();
         logger.info("**** Computing path");
         logger.info("PATH NOT COMPUTED");
