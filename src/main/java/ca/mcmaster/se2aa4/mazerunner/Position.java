@@ -27,7 +27,7 @@ public class Position {
         return "("+String.valueOf(x) +","+ String.valueOf(y)+")";
     }
     @Override
-    public boolean equals(Object object) { //I had to add this and the hashCode to make LinkedHashMap find my key through the method containsKey() 
+    public boolean equals(Object object) { //I had to add this and the hashCode to make LinkedHashMap find my key through the method containsKey() and get()
         if (this == object) return true; //compare object to it self in memory to check if its identical
         if (object == null || getClass() != object.getClass()) //if object doesnt exist or not same class
             return false; 

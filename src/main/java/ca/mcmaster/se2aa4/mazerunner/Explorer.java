@@ -5,8 +5,8 @@ import org.apache.logging.log4j.Logger;
 
 public class Explorer {
     private static final Logger logger = LogManager.getLogger();
-    private Maze maze;
-    private Position position; //position in form (row,column)
+    private final Maze maze;
+    private final Position position; //position in form (row,column)
     private int orientation = 90; //(Default: facing east) | Directions: north=0, east=90, south 180, west=270
 
     public Explorer(Position start,Maze maze) {
@@ -39,17 +39,31 @@ public class Explorer {
         }
     }
     
-    public void moveInstruction(char instruction){
+    private void moveInstruction(char instruction,boolean verification, boolean isLastInstruction){
         switch(instruction) {
             case 'F'-> {
                 Position forwardPos = getForwardPosition();
-                if (maze.getTypeAtPosition(getForwardPosition())==1) { //if there is no wall in front then move
-                    int[] forwardPosition2D = forwardPos.getPosition();
-                    this.position.setPosition(forwardPosition2D[0],forwardPosition2D[1]);
-                    logger.info("Moved forward");
-                    logger.info("CurrentPosition: "+this.position.getStringPosition());
-                } else {
-                    logger.info("cant move forward");
+                String movementType = verification? "VERIFICATION MOVEMENT" : "NORMAL MOVEMENT";
+                switch(maze.getTypeAtPosition(getForwardPosition())) {
+                    case 1->{
+                        int[] forwardPosition2D = forwardPos.getPosition();
+                        this.position.setPosition(forwardPosition2D[0],forwardPosition2D[1]);
+                        logger.info("["+movementType+"] Moved forward");
+                        logger.info("CurrentPosition: "+this.position.getStringPosition());
+                        if (!verification && position.equals(maze.getexit())&&isLastInstruction) {//win conditions to log that explorer has reached the exit
+                            logger.info("reached the exit.");
+                        }
+                    }
+                    
+                    case -1 -> {
+                        int[] forwardPosition2D = forwardPos.getPosition();
+                        this.position.setPosition(forwardPosition2D[0],forwardPosition2D[1]);
+                        logger.info("Moved out of boundry");
+                    }
+
+                    case 0 -> {
+                        logger.info("cant move forward");
+                    }
                 }
             }
             case 'R'-> {
@@ -57,7 +71,6 @@ public class Explorer {
                     setOrientation(orientation+90);
                     logger.info("Turned right");
                     logger.info("CurrentOrientation: "+ this.orientation);
-                    
                 } else {
                     logger.info("cant turn right");
                 }
@@ -72,6 +85,34 @@ public class Explorer {
                     logger.info("cant turn left");
                 }
             }
+            default -> logger.error("Invalid movement instruction: "+instruction);
         }
+    }
+
+    public void moveInstructions(String instructions){
+        moveInstructions(instructions,false);
+    }
+    private void moveInstructions(String instructions,boolean verification){
+        for (int i = 0; i < instructions.length(); i++) {
+            if (i==instructions.length()-1){
+                moveInstruction(instructions.charAt(i),verification,true);
+            } else {
+                moveInstruction(instructions.charAt(i),verification,false);
+            }
+        }
+    }
+
+    public Boolean VerifyPath(String instructions){ //make the explorer go through path and if position of explorer = the exit then the path is true. After verifcation reset explorer position to original
+        if (instructions.matches("^[FLR]+$")) { //to be a correct path must contain one of these letters at least once.
+            int[] originalPosition = position.getPosition();
+            moveInstructions(instructions,true);
+            boolean isExit = position.equals(maze.getexit());
+            this.position.setPosition(originalPosition[0],originalPosition[1]);
+            this.orientation = 90;
+            return isExit;
+        } else {
+            logger.error("canonical path contains only F, R and L symbols. Given path is invalid.");
+        }
+        return false;
     }
 }

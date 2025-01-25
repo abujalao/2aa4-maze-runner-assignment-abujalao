@@ -2,40 +2,58 @@ package ca.mcmaster.se2aa4.mazerunner;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class Maze {
+    private final static  Logger logger = LogManager.getLogger();
+    private final LinkedHashMap<Position, Integer> mazeGrid = new LinkedHashMap<>(); //keys: 2dVectorPosition values: 0 = wall , 1 = space
+    private int columnSize=0;
     private Position entry;
     private Position exit;
-    private static final Logger logger = LogManager.getLogger();
-    private final LinkedHashMap<Position, Integer> mazeGrid = new LinkedHashMap<>(); //keys: 2dVectorPosition values: 0 = wall , 1 = space
-
+    
     public Maze(String filePath){ //to create maze need a valid file path
         try {
             BufferedReader reader = new BufferedReader(new FileReader(filePath));
+            List<String> lines = new ArrayList<>();
             String line;
+            
+            while ((line = reader.readLine()) != null) { 
+                lines.add(line); //add lines in temporary array list to read again from it instead of reading the file over again
+                columnSize = Math.max(columnSize, line.length()); //find the longest line length to fill empty lines (for example an empty line will be interpreted as a straight line with spaces. Amount of spaces = columSize)
+            }
+            reader.close();
             int row=0;
-            while ((line = reader.readLine()) != null) {
-                for (int col = 0; col < line.length(); col++) {
+            for (String storedLine : lines) {
+                for (int col = 0; col < columnSize; col++) {
                     Position pos = new Position(0,0);
                     pos.setPosition(row, col);
-                    if (line.charAt(col) == '#') {
+
+                    char lineCharacter;
+                    if (col < storedLine.length()) { 
+                        lineCharacter=storedLine.charAt(col);
+                    } else { //This runs if the line is empty or incomplete in txt file. For example line with no characters means line.length()=0, so charAt wont work. The whole line will be filled with spaces instead.
+                        lineCharacter=' ';
+                    }
+                    if (lineCharacter == '#') {
                         this.mazeGrid.put(pos,0);
-                    } else if (line.charAt(col) == ' ') {
+                    } else if (lineCharacter == ' ') {
                         this.mazeGrid.put(pos,1);
-                        if(col==0) { //if any space found in the first column then its entry 
+                        if(col==0) { //if any space found in the first column then its entry   
                             entry=new Position(row,col);
-                        } else if(col==line.length()-1){//if any space found in the last column then its exit
+                        } else if(col==columnSize-1){//if any space found in the last column then its exit
                             exit=new Position(row,col);
                         }
                     }
                 }
                 row++;
             }
+            lines.clear();//clear list as it is no longer needed.
         } catch (Exception e) {
             logger.error("/!\\ An error has occured /!\\  ("+e.getMessage()+")");
         }  
@@ -54,21 +72,22 @@ public class Maze {
         return mazeGrid.getOrDefault(position,-1); 
     }
     public void printMaze(){
-        int pastX = 0;
-        for(Map.Entry<Position, Integer> mapEntry : mazeGrid.entrySet()) {
+        int pastRow = 0; //To check if the current row has changed by tracking the previous row. Print a new line for a new row if row changed.
+        String maze="\n";
+        for(Map.Entry<Position, Integer> mapEntry : mazeGrid.entrySet()) { //loop through maze and print it using (row,column) position
             Position pos = mapEntry.getKey();
             int type = mapEntry.getValue();
-            if (pastX != pos.getPosition()[0]){
-                pastX = pos.getPosition()[0];
-                System.out.print(System.lineSeparator());
+            if (pastRow != pos.getPosition()[0]){ //compare previous row to current row
+                pastRow = pos.getPosition()[0];
+                maze+=System.lineSeparator();
             }
             if (type == 0) {
-                System.out.print("WALL ");
+               maze+="WALL ";
             } else if (type == 1) {
-                System.out.print("PASS ");
+                maze+="PASS ";
             }
         }
-        System.out.print("\n");
+        logger.info(maze);
     }
 
 }

@@ -8,7 +8,7 @@ import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 public class CmdManager {
-    private static final Logger logger = LogManager.getLogger();
+    private final static Logger logger = LogManager.getLogger();
     private final static Options options = new Options();
     private final static CommandLineParser parser = new DefaultParser();
     private final String [] argumentVector;
@@ -24,10 +24,7 @@ public class CmdManager {
     public String getFlag(String flag, String defaultValue){
         try {
             CommandLine cmd = parser.parse(options, argumentVector);
-            String Result = cmd.getOptionValue(flag,defaultValue);
-            if (Result == "") {
-                throw new Exception("No file provided");
-            }
+            String Result = cmd.getOptionValue(flag, defaultValue);
             return Result;
         } catch (ParseException e) {
             logger.error("/!\\ Parsing error has occured /!\\  " + e.getMessage());
