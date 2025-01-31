@@ -11,8 +11,13 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class Maze {
+    public enum Types {
+        wall,
+        space,
+        NotAvailable
+    }
     private final static  Logger logger = LogManager.getLogger();
-    private final LinkedHashMap<Position, Integer> mazeGrid = new LinkedHashMap<>(); //keys: 2dVectorPosition values: 0 = wall , 1 = space
+    private final LinkedHashMap<Position, Types> mazeGrid = new LinkedHashMap<>(); //keys: 2dVectorPosition values: 0 = wall , 1 = space
     private int columnSize=0;
     private Position entry;
     private Position exit;
@@ -41,9 +46,9 @@ public class Maze {
                         lineCharacter=' ';
                     }
                     if (lineCharacter == '#') {
-                        this.mazeGrid.put(pos,0);
+                        this.mazeGrid.put(pos,Types.wall);
                     } else if (lineCharacter == ' ') {
-                        this.mazeGrid.put(pos,1);
+                        this.mazeGrid.put(pos,Types.space);
                         if(col==0) { //if any space found in the first column then its entry   
                             entry=new Position(row,col);
                         } else if(col==columnSize-1){//if any space found in the last column then its exit
@@ -68,22 +73,23 @@ public class Maze {
         return exit;
     }
 
-    public int getTypeAtPosition(Position position){ //Returns the value of the position key in the grid. Returns: -1=doesntExist , 0=wall , 1=space
-        return mazeGrid.getOrDefault(position,-1); 
+    public Types getTypeAtPosition(Position position){ //Returns the value of the position key in the grid. Returns: -1=doesntExist , 0=wall , 1=space
+        return mazeGrid.getOrDefault(position,Types.NotAvailable); 
     }
+    
     public void printMaze(){
         int pastRow = 0; //To check if the current row has changed by tracking the previous row. Print a new line for a new row if row changed.
         String maze="\n";
-        for(Map.Entry<Position, Integer> mapEntry : mazeGrid.entrySet()) { //loop through maze and print it using (row,column) position
+        for(Map.Entry<Position, Types> mapEntry : mazeGrid.entrySet()) { //loop through maze and print it using (row,column) position
             Position pos = mapEntry.getKey();
-            int type = mapEntry.getValue();
+            Types type = mapEntry.getValue();
             if (pastRow != pos.getPosition()[0]){ //compare previous row to current row
                 pastRow = pos.getPosition()[0];
                 maze+=System.lineSeparator();
             }
-            if (type == 0) {
+            if (type == Types.wall) {
                maze+="WALL ";
-            } else if (type == 1) {
+            } else if (type == Types.space) {
                 maze+="PASS ";
             }
         }
