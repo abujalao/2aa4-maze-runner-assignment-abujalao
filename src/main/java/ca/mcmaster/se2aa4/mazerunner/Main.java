@@ -7,7 +7,6 @@ public class Main {
 
     private static final Logger logger = LogManager.getLogger();
     private static String mazeFileLocation;
-    private String givenPathVerify;
     public static void main(String[] args) {
         logger.info("** Starting Maze Runner");
         //initialize cmdManager and add required flags
@@ -25,13 +24,17 @@ public class Main {
         logger.info("**** Reading the maze from file " + mazeFileLocation);
         Maze maze = new Maze(mazeFileLocation);
         maze.printMaze();
+
         int[] entry2D = maze.getEntry().getPosition();
         Explorer explorer = new Explorer(new Position(entry2D[0],entry2D[1]),maze);
+
         //get -p movement to verify if given
         String manualInstructions = cmdManage.getFlag("p",""); //instructions given by user to verify
         if (manualInstructions==null || manualInstructions.equals("")) {
             logger.info("**** Computing path");
             logger.info("PATH NOT COMPUTED");
+            String path = explorer.pathFinding();
+            System.out.println(path);
         } else {
             logger.info("**** Verifying path: "+manualInstructions);
             Boolean res = explorer.VerifyPath(manualInstructions);
