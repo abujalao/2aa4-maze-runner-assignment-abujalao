@@ -25,23 +25,17 @@ public class Maze {
     public Maze(String filePath){ //to create maze need a valid file path
         try {
             BufferedReader reader = new BufferedReader(new FileReader(filePath));
-            List<String> lines = new ArrayList<>();
             String line;
-            
-            while ((line = reader.readLine()) != null) { 
-                lines.add(line); //add lines in temporary array list to read again from it instead of reading the file over again
-                columnSize = Math.max(columnSize, line.length()); //find the longest line length to fill empty lines (for example an empty line will be interpreted as a straight line with spaces. Amount of spaces = columSize)
-            }
-            reader.close();
             int row=0;
-            for (String storedLine : lines) {
+            while ((line = reader.readLine()) != null) { 
+                columnSize = Math.max(columnSize, line.length()); //the first line is the longest and this will be used to fill the empty lines with space by checking columnSize and line.length()
                 for (int col = 0; col < columnSize; col++) {
                     Position pos = new Position(0,0);
                     pos.setPosition(row, col);
 
                     char lineCharacter;
-                    if (col < storedLine.length()) { 
-                        lineCharacter=storedLine.charAt(col);
+                    if (col < line.length()) { 
+                        lineCharacter=line.charAt(col);
                     } else { //This runs if the line is empty or incomplete in txt file. For example line with no characters means line.length()=0, so charAt wont work. The whole line will be filled with spaces instead.
                         lineCharacter=' ';
                     }
@@ -58,7 +52,7 @@ public class Maze {
                 }
                 row++;
             }
-            lines.clear();//clear list as it is no longer needed.
+            reader.close();
         } catch (Exception e) {
             logger.error("/!\\ An error has occured /!\\  ("+e.getMessage()+")");
         }  
