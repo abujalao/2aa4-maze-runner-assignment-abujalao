@@ -149,4 +149,25 @@ public class Explorer {
         }
         return false;
     }
+
+    private String formatRunLength(char letter, int count) {
+        return (count > 1) ? count + Character.toString(letter) : Character.toString(letter);
+    }
+    public String FactorizeForm(String instructions){
+        String factorized = "";
+        char lastLetter=instructions.charAt(0);
+        int count = 1;
+        for (int i = 1; i < instructions.length(); i++) {
+            char currentChar = instructions.charAt(i);
+            if (currentChar==lastLetter) {
+                count++;
+            } else {
+                factorized += formatRunLength(lastLetter,count);
+                count = 1;
+                lastLetter = currentChar;
+            }
+        }
+        factorized += formatRunLength(lastLetter,count); //count what is left from last for loop iteration and add to factorized path
+        return factorized;
+    }
 }

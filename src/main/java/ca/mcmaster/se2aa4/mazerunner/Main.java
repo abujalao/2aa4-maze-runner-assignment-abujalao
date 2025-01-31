@@ -34,7 +34,7 @@ public class Main {
             logger.info("**** Computing path");
             logger.info("PATH NOT COMPUTED");
             String path = explorer.pathFinding();
-            System.out.println(path);
+            System.out.println(explorer.FactorizeForm(path));
         } else {
             logger.info("**** Verifying path: "+manualInstructions);
             Boolean res = explorer.VerifyPath(manualInstructions);
