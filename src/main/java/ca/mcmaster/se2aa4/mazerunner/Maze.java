@@ -2,29 +2,28 @@ package ca.mcmaster.se2aa4.mazerunner;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 public class Maze {
-    public enum Types {
-        wall,
-        space,
+    
+    public enum CellType {
+        Wall,
+        Space,
         NotAvailable
     }
+
     private final static  Logger logger = LogManager.getLogger();
-    private final LinkedHashMap<Position, Types> mazeGrid = new LinkedHashMap<>(); //keys: 2dVectorPosition values: 0 = wall , 1 = space
+    private final LinkedHashMap<Position, CellType> mazeGrid = new LinkedHashMap<>(); // Keys: Position class | Values: enum CellType
     private int columnSize=0;
     private Position entry;
     private Position exit;
     
     public Maze(String filePath){ //to create maze need a valid file path
-        try {
-            BufferedReader reader = new BufferedReader(new FileReader(filePath));
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
             String line;
             int row=0;
             while ((line = reader.readLine()) != null) { 
@@ -40,9 +39,9 @@ public class Maze {
                         lineCharacter=' ';
                     }
                     if (lineCharacter == '#') {
-                        this.mazeGrid.put(pos,Types.wall);
+                        this.mazeGrid.put(pos,CellType.Wall);
                     } else if (lineCharacter == ' ') {
-                        this.mazeGrid.put(pos,Types.space);
+                        this.mazeGrid.put(pos,CellType.Space);
                         if(col==0) { //if any space found in the first column then its entry   
                             entry=new Position(row,col);
                         } else if(col==columnSize-1){//if any space found in the last column then its exit
@@ -63,27 +62,27 @@ public class Maze {
         return entry;
     }
 
-    public Position getexit(){
+    public Position getExit(){
         return exit;
     }
 
-    public Types getTypeAtPosition(Position position){ //Returns the value of the position key in the grid. Returns: -1=doesntExist , 0=wall , 1=space
-        return mazeGrid.getOrDefault(position,Types.NotAvailable); 
+    public CellType getTypeAtPosition(Position position){ //Returns the value of the position key in the grid. Returns: -1=doesntExist , 0=wall , 1=space
+        return mazeGrid.getOrDefault(position,CellType.NotAvailable); 
     }
     
     public void printMaze(){
         int pastRow = 0; //To check if the current row has changed by tracking the previous row. Print a new line for a new row if row changed.
         String maze="\n";
-        for(Map.Entry<Position, Types> mapEntry : mazeGrid.entrySet()) { //loop through maze and print it using (row,column) position
+        for(Map.Entry<Position, CellType> mapEntry : mazeGrid.entrySet()) { //loop through maze and print it using (row,column) position
             Position pos = mapEntry.getKey();
-            Types type = mapEntry.getValue();
+            CellType type = mapEntry.getValue();
             if (pastRow != pos.getPosition()[0]){ //compare previous row to current row
                 pastRow = pos.getPosition()[0];
                 maze+=System.lineSeparator();
             }
-            if (type == Types.wall) {
+            if (type == CellType.Wall) {
                maze+="WALL ";
-            } else if (type == Types.space) {
+            } else if (type == CellType.Space) {
                 maze+="PASS ";
             }
         }

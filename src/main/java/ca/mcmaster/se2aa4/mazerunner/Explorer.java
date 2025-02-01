@@ -2,13 +2,19 @@ package ca.mcmaster.se2aa4.mazerunner;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-public class Explorer {
+
+interface Pathfinder {
+    String findPath();
+}
+
+public class Explorer implements Pathfinder {
     private static final Logger logger = LogManager.getLogger();
     private final Maze maze;
     private final Position position; //position in form (row,column)
-    private int orientation = 90; //(Default: facing east) | Directions: north=0, east=90, south 180, west=270
+    private int orientation = 90; //(Default: facing east) | Directions: north=0, east=90, south=180, west=270
     private boolean reachedExit = false;
     private String path="";
+
     public Explorer(Position start,Maze maze) {
         this.maze = maze; //need to access maze to make explorer check the maze walls
         this.position = start;
@@ -39,6 +45,7 @@ public class Explorer {
         }
         return value;
     }
+
     private void setOrientation(int value) {
         this.orientation = ValidateOrientation(value);
     }
@@ -50,32 +57,33 @@ public class Explorer {
         }
         return res;
     }
+
     private boolean moveInstruction(char instruction,boolean verification, boolean isLastInstruction){ //return if move is successfull or not
         switch(instruction) {
             case 'F'-> {
                 Position forwardPos = getForwardPosition();
                 String movementType = verification? "VERIFICATION MOVEMENT" : "NORMAL MOVEMENT";
                 switch(maze.getTypeAtPosition(getForwardPosition())) {
-                    case Maze.Types.space->{
+                    case Maze.CellType.Space->{
                         int[] forwardPosition2D = forwardPos.getPosition();
                         this.position.setPosition(forwardPosition2D[0],forwardPosition2D[1]);
                         logger.info("["+movementType+"] Moved forward");
                         logger.info("CurrentPosition: "+this.position.getStringPosition());
-                        if (!verification && position.equals(maze.getexit())&&(isLastInstruction||!verification)) {//win condition
+                        if (!verification && position.equals(maze.getExit())&&(isLastInstruction||!verification)) {//win condition
                             logger.info("reached end");
                             reachedExit = true;
                         }
                         return true;
                     }
                     
-                    case Maze.Types.NotAvailable -> { //in path verification if given path is moving out boundry
+                    case Maze.CellType.NotAvailable -> { //in path verification if given path is moving out boundry
                         int[] forwardPosition2D = forwardPos.getPosition();
                         this.position.setPosition(forwardPosition2D[0],forwardPosition2D[1]);
                         logger.info("Moved out of boundry");
                         return false;
                     }
 
-                    case Maze.Types.wall -> { //Wall blocking the explorer
+                    case Maze.CellType.Wall -> { //Wall blocking the explorer
                         logger.info("cant move forward");
                         return false;
                     }
@@ -97,9 +105,6 @@ public class Explorer {
         return false;
     }
 
-    public void moveInstructions(String instructions){
-        moveInstructions(instructions,false);
-    }
     private void moveInstructions(String instructions,boolean verification){
         for (int i = 0; i < instructions.length(); i++) {
             if (i==instructions.length()-1){
@@ -110,50 +115,11 @@ public class Explorer {
         }
     }
 
-    public String pathFinding(){
-        while (!reachedExit) {
-            // try {
-            //     TimeUnit.SECONDS.sleep(1);
-            // } catch (Exception e) {
-            //     logger.error(e);
-            // }
-            switch(maze.getTypeAtPosition(getForwardPosition(orientation+90))) { //check right hand of explorer.
-                case Maze.Types.wall -> { //check right hand of explorer. If there is a wall keep moving forward
-                    boolean result = moveInstruction('F');
-                    if (!result && (maze.getTypeAtPosition(getForwardPosition(orientation))==Maze.Types.wall)) { //if wall in front then turn left and move forward
-                        moveInstruction('L');
-                    }
-                    break;
-                } 
-                case Maze.Types.space -> { //if there is space then turn right and move forward
-                    //logger.info("Turn right and front");
-                    moveInstruction('R');
-                    moveInstruction('F');
-                    break;
-                }
-            }
-        } 
-        return path;
-    } 
-
-    public Boolean VerifyPath(String instructions){ //make the explorer go through path and if position of explorer = the exit then the path is true. After verifcation reset explorer position to original
-        if (instructions.matches("^[FLR]+$")) { //to be a correct path must contain one of these letters at least once.
-            int[] originalPosition = position.getPosition();
-            moveInstructions(instructions,true);
-            boolean isExit = position.equals(maze.getexit());
-            this.position.setPosition(originalPosition[0],originalPosition[1]);
-            setOrientation(90);
-            return isExit;
-        } else {
-            logger.error("canonical path contains only F, R and L symbols. Given path is invalid.");
-        }
-        return false;
-    }
-
     private String formatRunLength(char letter, int count) {
         return (count > 1) ? count + Character.toString(letter) : Character.toString(letter);
     }
-    public String FactorizeForm(String instructions){
+
+    private String FactorizeForm(String instructions){
         String factorized = "";
         char lastLetter=instructions.charAt(0);
         int count = 1;
@@ -169,5 +135,41 @@ public class Explorer {
         }
         factorized += formatRunLength(lastLetter,count); //count what is left from last for loop iteration and add to factorized path
         return factorized;
+    }
+
+    @Override
+    public String findPath(){
+        while (!reachedExit) {
+            switch(maze.getTypeAtPosition(getForwardPosition(orientation+90))) { //check right hand of explorer.
+                case Maze.CellType.Wall -> { //check right hand of explorer. If there is a wall keep moving forward
+                    boolean result = moveInstruction('F');
+                    if (!result && (maze.getTypeAtPosition(getForwardPosition(orientation))==Maze.CellType.Wall)) { //if wall in front then turn left and move forward
+                        moveInstruction('L');
+                    }
+                    break;
+                } 
+                case Maze.CellType.Space -> { //if there is space then turn right and move forward
+                    //logger.info("Turn right and front");
+                    moveInstruction('R');
+                    moveInstruction('F');
+                    break;
+                }
+            }
+        } 
+        return FactorizeForm(path);
+    } 
+
+    public Boolean VerifyPath(String instructions){ //make the explorer go through path and if position of explorer = the exit then the path is true. After verifcation reset explorer position to original
+        if (instructions.matches("^[FLR]+$")) { //to be a correct path must contain one of these letters at least once.
+            int[] originalPosition = position.getPosition();
+            moveInstructions(instructions,true);
+            boolean isExit = position.equals(maze.getExit());
+            this.position.setPosition(originalPosition[0],originalPosition[1]);
+            setOrientation(90);
+            return isExit;
+        } else {
+            logger.error("canonical path contains only F, R and L symbols. Given path is invalid.");
+        }
+        return false;
     }
 }

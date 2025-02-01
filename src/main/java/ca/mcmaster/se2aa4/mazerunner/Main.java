@@ -33,8 +33,8 @@ public class Main {
         if (manualInstructions==null || manualInstructions.equals("")) {
             logger.info("**** Computing path");
             logger.info("PATH NOT COMPUTED");
-            String path = explorer.pathFinding();
-            System.out.println(explorer.FactorizeForm(path));
+            String path = explorer.findPath();
+            System.out.println(path);
         } else {
             logger.info("**** Verifying path: "+manualInstructions);
             Boolean res = explorer.VerifyPath(manualInstructions);
