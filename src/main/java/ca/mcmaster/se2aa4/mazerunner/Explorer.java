@@ -1,12 +1,6 @@
 package ca.mcmaster.se2aa4.mazerunner;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-
-
 public class Explorer {
-    private static final Logger logger = LogManager.getLogger();
     private final Maze maze;
     private final Position position; //position in form (row,column)
     private int orientation = 90; //(Default: facing east) | Directions: north=0, east=90, south=180, west=270
@@ -14,10 +8,6 @@ public class Explorer {
     public Explorer(Position start,Maze maze) {
         this.maze = maze; //need to access maze to make explorer check the maze walls
         this.position = start;
-    }
-
-    private Position getForwardPosition() {//use method overloading to make "checkOrien" parameter optional
-        return getForwardPosition(this.orientation);
     }
 
     public Maze getMaze() {
@@ -32,6 +22,10 @@ public class Explorer {
         return position.equals(maze.getExit());
     }
     
+    private Position getForwardPosition() {//use method overloading to make "checkOrien" parameter optional
+        return getForwardPosition(this.orientation);
+    }
+
     public Position getForwardPosition(int checkOrien) {
         checkOrien = ValidateOrientation(checkOrien);
         int[] position2D = position.getPosition();
@@ -45,6 +39,10 @@ public class Explorer {
         return returnPos;
     } 
 
+    private void setOrientation(int value) {
+        this.orientation = ValidateOrientation(value);
+    }
+
     private int ValidateOrientation(int value) { //check if orientation is out of 0-360 range
         if (value>=360) {
             value -= 360;
@@ -53,60 +51,47 @@ public class Explorer {
         }
         return value;
     }
-
-    private void setOrientation(int value) {
-        this.orientation = ValidateOrientation(value);
+    
+    public void moveInstructions(String instructions){ //used for path verification given string of instructions
+        for (int i = 0; i < instructions.length(); i++) {
+            moveInstruction(instructions.charAt(i));
+        }
     }
     
-    public boolean moveInstruction(char instruction) { //used in path finding class
-        return moveInstruction(instruction,false);
-    }
-    private boolean moveInstruction(char instruction,boolean verification){ //return if move is successfull or not
+    public boolean moveInstruction(char instruction){ //return if move is successfull or not
         switch(instruction) {
             case 'F'-> {
                 Position forwardPos = getForwardPosition();
-                String movementType = verification? "VERIFICATION MOVEMENT" : "NORMAL MOVEMENT";
                 switch(maze.getTypeAtPosition(getForwardPosition())) {
                     case Maze.CellType.Space->{
                         int[] forwardPosition2D = forwardPos.getPosition();
                         this.position.setPosition(forwardPosition2D[0],forwardPosition2D[1]);
-                        logger.info("["+movementType+"] Moved forward");
-                        logger.info("CurrentPosition: "+this.position.getStringPosition());
                         return true;
                     }
                     
                     case Maze.CellType.NotAvailable -> { //in path verification if given path is moving out boundry
                         int[] forwardPosition2D = forwardPos.getPosition();
                         this.position.setPosition(forwardPosition2D[0],forwardPosition2D[1]);
-                        logger.info("Moved out of boundry");
                         return false;
                     }
 
                     case Maze.CellType.Wall -> { //Wall blocking the explorer
-                        logger.info("cant move forward");
                         return false;
                     }
                 }
             }
+
             case 'R'-> {
                 setOrientation(orientation+90);
-                logger.info("Turned right");
-                logger.info("CurrentOrientation: "+ this.orientation);
                 return true;
             }
+
             case 'L'-> {
                 setOrientation(orientation-90);
-                logger.info("Turned left");
                 return true;
             }
-            default -> logger.error("Invalid movement instruction: "+instruction);
+            default -> {}
         }
         return false;
-    }
-
-    public void moveInstructions(String instructions,boolean verification){ //used for path verification given string of instructions
-        for (int i = 0; i < instructions.length(); i++) {
-            moveInstruction(instructions.charAt(i),verification);
-        }
     }
 }

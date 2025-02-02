@@ -1,13 +1,9 @@
 package ca.mcmaster.se2aa4.mazerunner;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 interface iPathfinder {
     String findPath();
 }
 public class PathManager implements iPathfinder {
-    private static final Logger logger = LogManager.getLogger();
     private final Explorer explorer;
     private String path="";
     public PathManager(Explorer explorer) {
@@ -68,11 +64,9 @@ public class PathManager implements iPathfinder {
 
     public Boolean VerifyPath(String instructions){ //make the explorer go through path and if position of explorer = the exit then the path is true. After verifcation reset explorer position to original
         if (instructions.matches("^[FLR]+$")) { //to be a correct path must contain one of these letters at least once.
-            explorer.moveInstructions(instructions,true);
+            explorer.moveInstructions(instructions);
             boolean isExit = explorer.hasReachedExit();
             return isExit;
-        } else {
-            logger.error("canonical path contains only F, R and L symbols. Given path is invalid.");
         }
         return false;
     }

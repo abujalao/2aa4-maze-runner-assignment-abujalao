@@ -53,9 +53,9 @@ public class Maze {
             }
             reader.close();
         } catch (Exception e) {
-            logger.error("/!\\ An error has occured /!\\  ("+e.getMessage()+")");
+            logger.error("/!\\ An error has occured /!\\");
+            System.exit(1);
         }  
-        logger.info("*Entry: "+entry.getStringPosition()+"  *Exit: "+exit.getStringPosition());
     }
     
     public Position getEntry(){
