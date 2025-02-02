@@ -27,17 +27,17 @@ public class Main {
 
         int[] entry2D = maze.getEntry().getPosition();
         Explorer explorer = new Explorer(new Position(entry2D[0],entry2D[1]),maze);
-
+        PathManager pathManage = new PathManager(explorer);
         //get -p movement to verify if given
         String manualInstructions = cmdManage.getFlag("p",""); //instructions given by user to verify
         if (manualInstructions==null || manualInstructions.equals("")) {
             logger.info("**** Computing path");
             logger.info("PATH NOT COMPUTED");
-            String path = explorer.findPath();
+            String path = pathManage.findPath();
             System.out.println(path);
         } else {
             logger.info("**** Verifying path: "+manualInstructions);
-            Boolean res = explorer.VerifyPath(manualInstructions);
+            Boolean res = pathManage.VerifyPath(manualInstructions);
             logger.info("PATH (" + manualInstructions + ") verification result: "+res);
             String resultOut = res? "correct path" : "incorrect path";
             System.out.println(resultOut);
