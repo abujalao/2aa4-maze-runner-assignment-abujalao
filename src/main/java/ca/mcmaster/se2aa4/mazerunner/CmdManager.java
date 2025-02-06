@@ -23,8 +23,7 @@ public class CmdManager {
             String Result = cmd.getOptionValue(flag, defaultValue);
             return Result;
         } catch (Exception e) {
-            
+            return null;
         }
-        return null;
     }
 }

@@ -1,23 +1,26 @@
 package ca.mcmaster.se2aa4.mazerunner;
 
-public class Explorer {
-    private final Maze maze;
+public class Explorer implements MazeExplorer {
+    private final MazeStructure maze;
     private final Position position; //position in form (row,column)
     private int orientation = 90; //(Default: facing east) | Directions: north=0, east=90, south=180, west=270
 
-    public Explorer(Position start,Maze maze) {
+    public Explorer(Position start,MazeStructure maze) {
         this.maze = maze; //need to access maze to make explorer check the maze walls
         this.position = start;
     }
 
-    public Maze getMaze() {
+    @Override
+    public MazeStructure getMaze() {
         return maze;
     }
 
+    @Override
     public int getOrientation() {
         return orientation;
     }
 
+    @Override
     public Boolean hasReachedExit() {
         return position.equals(maze.getExit());
     }
@@ -26,6 +29,7 @@ public class Explorer {
         return getForwardPosition(this.orientation);
     }
 
+    @Override
     public Position getForwardPosition(int checkOrien) {
         checkOrien = ValidateOrientation(checkOrien);
         int[] position2D = position.getPosition();
@@ -52,13 +56,15 @@ public class Explorer {
         return value;
     }
     
+    @Override
     public void moveInstructions(String instructions){ //used for path verification given string of instructions
         for (int i = 0; i < instructions.length(); i++) {
             moveInstruction(instructions.charAt(i));
         }
     }
     
-    public boolean moveInstruction(char instruction){ //return if move is successfull or not
+    @Override
+    public boolean moveInstruction(char instruction){ //return if move is successful or not
         switch(instruction) {
             case 'F'-> {
                 Position forwardPos = getForwardPosition();

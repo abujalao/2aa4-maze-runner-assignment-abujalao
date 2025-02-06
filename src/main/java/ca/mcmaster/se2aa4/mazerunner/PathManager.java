@@ -1,12 +1,14 @@
 package ca.mcmaster.se2aa4.mazerunner;
 
-interface iPathfinder {
+interface Pathfinder {
     String findPath();
 }
-public class PathManager implements iPathfinder {
-    private final Explorer explorer;
+
+public class PathManager implements Pathfinder {
+    private final MazeExplorer explorer;
     private String path="";
-    public PathManager(Explorer explorer) {
+    
+    public PathManager(MazeExplorer explorer) {
         this.explorer = explorer;
     }
 
@@ -41,7 +43,7 @@ public class PathManager implements iPathfinder {
 
     @Override
     public String findPath(){
-        Maze currentMaze = explorer.getMaze();
+        MazeStructure currentMaze = explorer.getMaze(); 
         while (!explorer.hasReachedExit()) {
             int orientation = explorer.getOrientation();
             switch(currentMaze.getTypeAtPosition(explorer.getForwardPosition(orientation+90))) { //check right hand of explorer.

@@ -8,7 +8,7 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Maze {
+public class Maze implements MazeStructure {
     
     public enum CellType {
         Wall,
@@ -52,6 +52,7 @@ public class Maze {
                 row++;
             }
             reader.close();
+            printMaze(); //log maze once it has been read
         } catch (Exception e) {
             logger.error("/!\\ An error has occured /!\\");
             System.exit(1);
@@ -62,15 +63,17 @@ public class Maze {
         return entry;
     }
 
+    @Override
     public Position getExit(){
         return exit;
     }
 
-    public CellType getTypeAtPosition(Position position){ //Returns the value of the position key in the grid. Returns: -1=doesntExist , 0=wall , 1=space
+    @Override
+    public CellType getTypeAtPosition(Position position){ //Returns the value of the position key in the grid. Returns: Enum.CellType
         return mazeGrid.getOrDefault(position,CellType.NotAvailable); 
     }
     
-    public void printMaze(){
+    private void printMaze(){
         int pastRow = 0; //To check if the current row has changed by tracking the previous row. Print a new line for a new row if row changed.
         String maze="\n";
         for(Map.Entry<Position, CellType> mapEntry : mazeGrid.entrySet()) { //loop through maze and print it using (row,column) position
@@ -88,5 +91,4 @@ public class Maze {
         }
         logger.info(maze);
     }
-
 }
