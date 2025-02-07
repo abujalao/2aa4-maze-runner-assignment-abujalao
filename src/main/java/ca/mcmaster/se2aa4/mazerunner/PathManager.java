@@ -93,15 +93,11 @@ public class PathManager implements Pathfinder {
 
     public Boolean VerifyPath(String instructions){ //make the explorer go through path and if position of explorer = the exit then the path is true. After verifcation reset explorer position to original
         Boolean isExit = false;
-        if ((instructions.matches("^[FLR]+$"))) { //to be a correct (not factorized) path must contain one of these letters at least once.
-            explorer.moveInstructions(instructions);
-            isExit = explorer.hasReachedExit();
-        } else if (instructions.matches("^[FLR]*\s?(?:[0-9]+[FLR]+\s?)*$")) { //check if given is factorized path.
+        if ((instructions.matches("^[FRL\s?0-9]+$"))) { //Check if path is valid
             String newpath = ExpandPath(instructions);
-            System.out.println(newpath);
             explorer.moveInstructions(newpath);
             isExit = explorer.hasReachedExit();
-        }
+        } 
         return isExit;
     }
 }
