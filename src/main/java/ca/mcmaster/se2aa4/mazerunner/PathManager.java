@@ -33,6 +33,31 @@ public class PathManager implements Pathfinder {
         return factorized;
     }
 
+    private String ExpandPath(String factorizedPath) {
+        String expanded = "";
+        for (int i = 0; i < factorizedPath.length(); i ++) {
+            if (Character.isDigit(factorizedPath.charAt(i))) {
+                String countString=""+factorizedPath.charAt(i);
+                for (int v = i+1; v < factorizedPath.length(); v++) { //Loop to check if there is more numbers (ie. bigger than one digit) like 22F
+                    if (Character.isDigit(factorizedPath.charAt(v))) {
+                        countString+=factorizedPath.charAt(v);
+                        i = v;
+                    } else {
+                        break;
+                    }
+                }
+                int count=Integer.parseInt(countString); 
+                char direction = factorizedPath.charAt(i + 1);
+                for (int j = 0; j < count-1; j++) {
+                    expanded+=direction;
+                }
+            } else {
+                expanded+=factorizedPath.charAt(i);
+            }
+        }
+        
+        return expanded;
+    }
     private boolean pathInsturction(char instruction){
         boolean res = explorer.moveInstruction(instruction);
         if (res) {
@@ -65,11 +90,15 @@ public class PathManager implements Pathfinder {
     } 
 
     public Boolean VerifyPath(String instructions){ //make the explorer go through path and if position of explorer = the exit then the path is true. After verifcation reset explorer position to original
-        if (instructions.matches("^[FLR]+$")) { //to be a correct path must contain one of these letters at least once.
+        Boolean isExit = false;
+        if ((instructions.matches("^[FLR]+$"))) { //to be a correct (not factorized) path must contain one of these letters at least once.
             explorer.moveInstructions(instructions);
-            boolean isExit = explorer.hasReachedExit();
-            return isExit;
+            isExit = explorer.hasReachedExit();
+        } else if (instructions.matches("^[FLR]*(?:[0-9]+[FLR]+)*$")) { //check if given is factorized path.
+            String newpath = ExpandPath(instructions);
+            explorer.moveInstructions(newpath);
+            isExit = explorer.hasReachedExit();
         }
-        return false;
+        return isExit;
     }
 }
