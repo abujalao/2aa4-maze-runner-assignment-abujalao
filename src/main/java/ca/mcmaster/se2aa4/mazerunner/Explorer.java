@@ -76,8 +76,7 @@ public class Explorer implements MazeExplorer {
                     }
                     
                     case Maze.CellType.NotAvailable -> { //in path verification if given path is moving out boundry
-                        int[] forwardPosition2D = forwardPos.getPosition();
-                        this.position.setPosition(forwardPosition2D[0],forwardPosition2D[1]);
+                        //dont walk out of boundary
                         return false;
                     }
 

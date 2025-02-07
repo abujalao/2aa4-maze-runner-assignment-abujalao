@@ -25,6 +25,7 @@ public class PathManager implements Pathfinder {
                 count++;
             } else {
                 factorized += formatRunLength(lastLetter,count);
+                factorized += " ";
                 count = 1;
                 lastLetter = currentChar;
             }
@@ -52,6 +53,7 @@ public class PathManager implements Pathfinder {
                     expanded+=direction;
                 }
             } else {
+                if (Character.isWhitespace(factorizedPath.charAt(i))) continue;
                 expanded+=factorizedPath.charAt(i);
             }
         }
@@ -94,8 +96,9 @@ public class PathManager implements Pathfinder {
         if ((instructions.matches("^[FLR]+$"))) { //to be a correct (not factorized) path must contain one of these letters at least once.
             explorer.moveInstructions(instructions);
             isExit = explorer.hasReachedExit();
-        } else if (instructions.matches("^[FLR]*(?:[0-9]+[FLR]+)*$")) { //check if given is factorized path.
+        } else if (instructions.matches("^[FLR]*\s?(?:[0-9]+[FLR]+\s?)*$")) { //check if given is factorized path.
             String newpath = ExpandPath(instructions);
+            System.out.println(newpath);
             explorer.moveInstructions(newpath);
             isExit = explorer.hasReachedExit();
         }
