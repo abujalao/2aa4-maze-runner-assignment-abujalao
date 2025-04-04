@@ -25,7 +25,8 @@ public class Explorer implements MazeExplorer {
         return position.equals(maze.getExit());
     }
     
-    private Position getForwardPosition() {//use method overloading to make "checkOrien" parameter optional
+    @Override
+    public Position getForwardPosition() {//use method overloading to make "checkOrien" parameter optional
         return getForwardPosition(this.orientation);
     }
 

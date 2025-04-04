@@ -6,4 +6,5 @@ public interface MazeExplorer {
     public Position getForwardPosition(int checkOrien);
     public void moveInstructions(String instructions);
     public boolean moveInstruction(char instruction);
+    public Position getForwardPosition();
 }

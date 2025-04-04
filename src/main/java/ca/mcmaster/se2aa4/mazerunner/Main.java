@@ -34,7 +34,8 @@ public class Main {
         String manualInstructions = cmdManage.getFlag("p",""); //instructions given by user to verify
         if (manualInstructions==null || manualInstructions.equals("")) {
             logger.info("**** Computing path");
-            String path = pathManage.findPath();
+            MazeSolver solver = new RightHandSolver(); // Use the RightHandSolver strategy
+            String path = solver.solveMaze(mazeStruct,exploreInterface);
             System.out.println(path);
         } else {
             Boolean res = pathManage.VerifyPath(manualInstructions);
