@@ -29,7 +29,7 @@ public class Main {
         int[] entry2D = maze.getEntry().getPosition();
         Explorer explorer = new Explorer(new Position(entry2D[0],entry2D[1]),mazeStruct);
         MazeExplorer exploreInterface = explorer;
-        PathManager pathManage = new PathManager(exploreInterface);
+        PathManager pathManage = PathManager.getInstance(exploreInterface);
         //get -p movement to verify if given
         String manualInstructions = cmdManage.getFlag("p",""); //instructions given by user to verify
         if (manualInstructions==null || manualInstructions.equals("")) {

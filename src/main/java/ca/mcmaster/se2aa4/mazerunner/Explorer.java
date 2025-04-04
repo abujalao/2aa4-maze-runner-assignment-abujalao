@@ -4,7 +4,7 @@ public class Explorer implements MazeExplorer {
     private final MazeStructure maze;
     private final Position position; //position in form (row,column)
     private int orientation = 90; //(Default: facing east) | Directions: north=0, east=90, south=180, west=270
-
+    
     public Explorer(Position start,MazeStructure maze) {
         this.maze = maze; //need to access maze to make explorer check the maze walls
         this.position = start;
