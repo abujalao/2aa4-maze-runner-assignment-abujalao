@@ -1,21 +1,9 @@
 package ca.mcmaster.se2aa4.mazerunner;
 
 public class PathManager {
-    private MazeExplorer explorer;
-    private static PathManager instance = null;
-    private PathManager(MazeExplorer explorer) {
-        this.explorer = explorer;
-    }
+    private final  MazeExplorer explorer;
 
-    public static PathManager getInstance(MazeExplorer explorer) {
-        if (instance == null) {
-            instance = new PathManager(explorer);
-        }
-        instance.setExplorer(explorer);
-        return instance;
-    }
-
-    private void setExplorer(MazeExplorer explorer) {
+    public PathManager(MazeExplorer explorer) {
         this.explorer = explorer;
     }
 

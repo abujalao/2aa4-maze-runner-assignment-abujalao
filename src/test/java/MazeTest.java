@@ -24,7 +24,7 @@ class MazeTest {
     void testTypeAtPosExit() {
         int[] entry = maze.getExit().getPosition();
 
-        assertEquals(CellType.Space, maze.getTypeAtPosition(new Position(entry[0],entry[1])));// Entry must be space and not wall
+        assertEquals(CellType.Space, maze.getTypeAtPosition(new Position(entry[0],entry[1])));// Exit must be space and not wall
     }
 
     @Test

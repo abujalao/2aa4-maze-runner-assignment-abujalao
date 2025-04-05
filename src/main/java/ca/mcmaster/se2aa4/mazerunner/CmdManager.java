@@ -7,10 +7,24 @@ import org.apache.commons.cli.Options;
 public class CmdManager {
     private final static Options options = new Options();
     private final static CommandLineParser parser = new DefaultParser();
-    private final String [] argumentVector;
+    private String [] argumentVector;
+    private static CmdManager instance = null;
 
-    public CmdManager(String[] args) { //need argument vector to initialize cmd
+    private CmdManager(String[] args) { //need argument vector to initialize cmd
         this.argumentVector = args;
+    }
+
+    public static CmdManager getInstance(String[] args) { //Singleton pattern to ensure only one instance of CmdManager is created.
+        if (instance == null) {
+            instance = new CmdManager(args);
+        } else {
+            instance.setArgumentVector(args); //if instance already exists, set the argument vector to the new value
+        }
+        return instance;
+    }
+
+    public void setArgumentVector(String[] args) { //set argument vector to new value
+        instance.argumentVector = args;
     }
 
     public void addFlag(String flag, Boolean required ,String description){

@@ -1,6 +1,11 @@
 package ca.mcmaster.se2aa4.mazerunner;
 
 public class PathFormatter { //path in String related functions
+
+    private PathFormatter() {} //private constructor to prevent instantiation
+    //This class is not meant to be instantiated, only used as a utility class
+
+
     private static String formatRunLength(char letter, int count) {
         return (count > 1) ? count + Character.toString(letter) : Character.toString(letter);
     }

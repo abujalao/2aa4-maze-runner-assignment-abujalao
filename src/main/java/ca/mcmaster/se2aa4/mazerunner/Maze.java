@@ -59,6 +59,7 @@ public class Maze implements MazeStructure {
         }  
     }
     
+    @Override
     public Position getEntry(){
         return entry;
     }

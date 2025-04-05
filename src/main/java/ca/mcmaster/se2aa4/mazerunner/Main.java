@@ -11,7 +11,7 @@ public class Main {
         logger.info("** Starting Maze Runner");
 
         //initialize cmdManager and add required flags
-        CmdManager cmdManage = new CmdManager(args);    
+        CmdManager cmdManage = CmdManager.getInstance(args); //cmdManager only need to be initialized once
         cmdManage.addFlag("i",true,"Provided maze file path");
         cmdManage.addFlag("p",true,"Provided path to verify");
 
@@ -29,7 +29,7 @@ public class Main {
         int[] entry2D = maze.getEntry().getPosition();
         Explorer explorer = new Explorer(new Position(entry2D[0],entry2D[1]),mazeStruct);
         MazeExplorer exploreInterface = explorer;
-        PathManager pathManage = PathManager.getInstance(exploreInterface);
+        PathManager pathManage = new PathManager(exploreInterface);
         //get -p movement to verify if given
         String manualInstructions = cmdManage.getFlag("p",""); //instructions given by user to verify
         if (manualInstructions==null || manualInstructions.equals("")) {
